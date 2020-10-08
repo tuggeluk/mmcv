@@ -5,8 +5,9 @@ from .pavi import PaviLoggerHook
 from .tensorboard import TensorboardLoggerHook
 from .text import TextLoggerHook
 from .wandb import WandbLoggerHook
+from .wandb_visual import WandbVisualLoggerHook
 
 __all__ = [
     'LoggerHook', 'MlflowLoggerHook', 'PaviLoggerHook',
-    'TensorboardLoggerHook', 'TextLoggerHook', 'WandbLoggerHook'
+    'TensorboardLoggerHook', 'TextLoggerHook', 'WandbLoggerHook', 'WandbVisualLoggerHook'
 ]
