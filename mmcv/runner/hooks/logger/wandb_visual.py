@@ -8,7 +8,7 @@ from .base import LoggerHook
 import wandb
 
 @HOOKS.register_module()
-class WandbLoggerHook(LoggerHook):
+class WandbVisualLoggerHook(LoggerHook):
 
     def __init__(self,
                  log_dir=None,
@@ -25,7 +25,7 @@ class WandbLoggerHook(LoggerHook):
             10 and the img_interval is 10, then images are sent every 100 runner
             intervals.
         """
-        super(WandbLoggerHook, self).__init__(interval, ignore_last,
+        super(WandbVisualLoggerHook, self).__init__(interval, ignore_last,
                                               reset_flag)
         self.calls = 0
         self.img_interval = img_interval
