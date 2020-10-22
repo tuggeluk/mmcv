@@ -4,17 +4,22 @@
 #include <cmath>
 #include <vector>
 
+#include "pytorch_cpp_helper.hpp"
+
+
 int TENERGYLauncher(const at::Tensor masks, const int batch_size,
                         const int scale_factor,const int max_energy,
                         const int height, const int width, const int channels,
                         at::Tensor output);
 
-#define CHECK_CUDA(x) AT_CHECK(x.type().is_cuda(), #x, " must be a CUDAtensor ")
-#define CHECK_CONTIGUOUS(x) \
-  AT_CHECK(x.is_contiguous(), #x, " must be contiguous ")
+/* #define CHECK_CUDA(x) AT_CHECK(x.type().is_cuda(), #x, " must be a CUDAtensor ") */
+
+/*#define CHECK_CONTIGUOUS(x) \
+  AT_CHECK(x.is_contiguous(), #x, " must be contiguous ")*/
+
 #define CHECK_INPUT(x) \
-  CHECK_CUDA(x);       \
-  CHECK_CONTIGUOUS(x)
+  CHECK_CUDA_INPUT(x);
+//  CHECK_CONTIGUOUS(x)
 
 int tenergy_cuda(at::Tensor masks, int scale_factor, int max_energy,
                               at::Tensor output) {
