@@ -89,10 +89,12 @@ def imshow_det_bboxes(img,
                       text_color='green',
                       thickness=1,
                       font_scale=0.5,
-                      show=True,
+                      show=False,
+                      show_label=False,
                       win_name='',
                       wait_time=0,
-                      out_file=None):
+                      out_file=None,
+                      rotated=False):
     """Draw bboxes and class labels (with scores) on an image.
 
     Args:
@@ -117,11 +119,11 @@ def imshow_det_bboxes(img,
     assert bboxes.ndim == 2
     assert labels.ndim == 1
     assert bboxes.shape[0] == labels.shape[0]
-    assert bboxes.shape[1] == 4 or bboxes.shape[1] == 5
+    #assert bboxes.shape[1] == 4 or bboxes.shape[1] == 5
     img = imread(img)
 
     if score_thr > 0:
-        assert bboxes.shape[1] == 5
+        assert (bboxes.shape[1] == 5 and rotated == False) or (bboxes.shape[1] == 9 and rotated == True)
         scores = bboxes[:, -1]
         inds = scores > score_thr
         bboxes = bboxes[inds, :]
@@ -132,16 +134,27 @@ def imshow_det_bboxes(img,
     img = np.ascontiguousarray(img)
     for bbox, label in zip(bboxes, labels):
         bbox_int = bbox.astype(np.int32)
-        left_top = (bbox_int[0], bbox_int[1])
-        right_bottom = (bbox_int[2], bbox_int[3])
-        cv2.rectangle(
-            img, left_top, right_bottom, bbox_color, thickness=thickness)
-        label_text = class_names[
-            label] if class_names is not None else f'cls {label}'
-        if len(bbox) > 4:
-            label_text += f'|{bbox[-1]:.02f}'
-        cv2.putText(img, label_text, (bbox_int[0], bbox_int[1] - 2),
-                    cv2.FONT_HERSHEY_COMPLEX, font_scale, text_color)
+        if not rotated:
+            left_top = (bbox_int[0], bbox_int[1])
+            right_bottom = (bbox_int[2], bbox_int[3])
+            cv2.rectangle(
+                img, left_top, right_bottom, bbox_color, thickness=thickness)
+
+        else:
+            for i in range(3):
+                cv2.line(img, (bbox_int[i * 2], bbox_int[i * 2 + 1]), (bbox_int[(i + 1) * 2], bbox_int[(i + 1) * 2 + 1]),
+                         color=bbox_color,thickness=thickness, lineType=cv2.LINE_AA)
+            cv2.line(img, (bbox_int[6], bbox_int[7]), (bbox_int[0], bbox_int[1]), color=bbox_color,thickness=thickness, lineType=cv2.LINE_AA)
+
+        if show_label:
+            label_text = class_names[
+                label] if class_names is not None else f'cls {label}'
+            if (len(bbox) > 4 and not rotated) or \
+               (len(bbox) > 9 and rotated):
+                label_text += f'|{bbox[-1]:.02f}'
+
+            cv2.putText(img, label_text, (bbox_int[0], bbox_int[1] - 2),
+                        cv2.FONT_HERSHEY_COMPLEX, font_scale, text_color)
 
     if show:
         imshow(img, win_name, wait_time)
